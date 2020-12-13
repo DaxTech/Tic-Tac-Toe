@@ -7,8 +7,8 @@ The aim of this project is to create an AI that can play Tic-Tac-Toe using the m
 - GUI version. <br>
 <br>
 ### Splitting it up
-- Represent 3x3 grid<br>
-- Values of X & O<br>
-- Implement the minimax algorithm<br>
-- Turns for the player, and the AI<br>
-- GUI with pygame
+- Represent 3x3 grid. <br>
+- Values of X & O. <br>
+- Implement the minimax algorithm. <br>
+- Turns for the player, and the AI. <br>
+- GUI with pygame. <br>
