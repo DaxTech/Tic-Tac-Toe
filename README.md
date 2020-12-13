@@ -6,6 +6,7 @@ The aim of this project is to create an AI that can play Tic-Tac-Toe using the m
 - Text-based version. <br>
 - GUI version. <br>
 <br>
+
 ## Splitting it up
 - Represent 3x3 grid. <br>
 - Values of X & O. <br>
