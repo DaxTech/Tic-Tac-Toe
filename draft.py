@@ -13,7 +13,7 @@ print(*grid, sep='\n')
 print()
 
 
-def win(board):
+def results(board):
     """Returns numeric value depending on the state of the game."""
     temp = list(map(list, zip(*board)))
     diagonalA = sum(board[z][z] for z in range(3))
@@ -31,11 +31,43 @@ def win(board):
 
     return 0
 
-def max(board):
+def turn(board):
     pass
 
-def min(board):
-    pass
+
+def game_over(board):
+    for i in board:
+        if None in board:
+            return False
+    return True
+
+
+def available_coords(board):
+    coords = []
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] is None:
+                coords.append((i, j))
+
+    return coords
+
+
+def fill(board, x, y, max_turn):
+    if max_turn:
+        board[y][x] = 1
+        return board
+    else:
+        board[y][x] = 0
+        return board
+
+
+def minimax(board, max_turn):
+    if game_over(board):
+        return results(board)
+
+    if max_turn:
+        for y, x in available_coords(board):
+            board = fill(board, x, y, max_turn=True)
 
 
 
