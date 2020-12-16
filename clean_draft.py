@@ -60,4 +60,32 @@ def transition(board, action, max_turn=True):
         board[y][x] = 1
     else:
         board[y][x] = 0
+
     return board
+
+
+def max_value(board):
+    if utility(board) is not False:
+        return utility(board), None
+    result = 0
+    v = -2
+    for action in possible_actions(board):
+        v2 = min_value(transition(board,action))
+        if v2[0] >= v:
+            result = action
+        v = max(v, v2[0])
+        board[action[0]][action[1]] = 10
+    return v, result
+
+
+def min_value(board):
+    if utility(board) is not False:
+        return utility(board), None
+    result = None
+    v = 1000
+    for action in possible_actions(board):
+        if max_value(transition(board, action, max_turn=False))[0] < v:
+            result = action
+        v = min(v, max_value(transition(board, action, max_turn=False))[0])
+        board[action[0]][action[1]] = 10
+    return v,result
