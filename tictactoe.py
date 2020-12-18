@@ -6,8 +6,15 @@ X = 1
 O = 0
 
 
-def utility(board):
-    """Returns value of the board."""
+def utility(board: list):
+    """
+    Returns value of the board.
+
+    Parameters
+    ----------
+    board: list
+        current or hypothetical board state
+    """
     transpose = list(map(list, zip(*board)))  # Transposed copy of the board
     counts = 0
     diagonal_a = sum(board[z][z] for z in range(3))
@@ -30,8 +37,15 @@ def utility(board):
     return False # the game is not yet finished
 
 
-def turn(board):
-    """Returns True if it's max's turn, False otherwise."""
+def turn(board: list):
+    """
+    Returns True if it's max's turn, False otherwise.
+
+    Parameters
+    ----------
+    board: list
+        current or hypothetical board state
+    """
     counts = 0
     for row in board:
         for item in row:
@@ -42,8 +56,15 @@ def turn(board):
     return True
 
 
-def possible_actions(board):
-    """Returns list of possible moves/actions."""
+def possible_actions(board: list):
+    """
+    Returns list of possible moves/actions.
+
+    Parameters
+    ----------
+    board: list
+        current or hypothetical board state
+    """
     coords = []
     for i in range(3):
         for j in range(3):
@@ -52,8 +73,19 @@ def possible_actions(board):
     return coords
 
 
-def transition(board, action, max_turn=True):
-    """Returns resulting board after making a certain move."""
+def transition(board: list, action: tuple, max_turn=True):
+    """
+    Returns resulting board after making a certain move.
+
+    Parameters
+    ----------
+    board: list
+        current or hypothetical board state
+    action: tuple
+        y and x coordinates
+    max_turn: bool
+        True if it's max's turn, False otherwise
+    """
     y, x = action
     if max_turn:
         board[y][x] = 1
@@ -62,8 +94,15 @@ def transition(board, action, max_turn=True):
     return board
 
 
-def maximizer(board):
-    """Recursive function. Returns action with the highest possible outcome."""
+def maximizer(board: list):
+    """
+    Recursive function. Returns action with the highest possible outcome.
+
+    Parameters
+    ---------
+    board: list
+        current or hypothetical board state
+    """
     if utility(board) is not False:
         return utility(board), None
     result = None
@@ -77,8 +116,15 @@ def maximizer(board):
     return v, result
 
 
-def minimizer(board):
-    """Recursive function. Returns action with the lowest possible outcome."""
+def minimizer(board: list):
+    """
+    Recursive function. Returns action with the lowest possible outcome.
+
+    Parameters
+    ----------
+    board: list
+        current or hypothetical board state
+    """
     if utility(board) is not False:
         return utility(board), None
     result = None
@@ -92,15 +138,36 @@ def minimizer(board):
     return v, result
 
 
-def player(board, max_player=True):
+def player(board: list, max_player=True):
+    """
+    Returns best move either for X or O
+
+    Parameters
+    ----------
+    board: list
+        current state of the board
+    max_player: bool
+        True if the AI is playing max, False otherwise
+    """
     if max_player:
         return maximizer(board)[1]
     else:
         return minimizer(board)[1]
 
 
-def move(board,action, max_player=True):
-    """Makes a movement of the board in place."""
+def move(board: list, action: tuple, max_player=True):
+    """
+    Makes a movement of the board in place.
+
+    Parameters
+    ---------
+    board: list
+        current state of the board
+    action: tuple
+        y and x coordinates
+    max_player: bool
+        True if the AI is playing max, False otherwise
+    """
     y, x = action
     if max_player:
         board[y][x] = 1
@@ -111,6 +178,7 @@ def move(board,action, max_player=True):
 # UTILITY GAME FUNCTIONS
 
 def player_select():
+    """Gets user choice for playing X or O."""
     print('Which player would you like to be? [O/X])')
     p = input()
     if p.lower() == 'o':
@@ -123,6 +191,7 @@ def player_select():
 
 
 def get_coordinates():
+    """Gets coordinates to draw the X/O."""
     print('Enter coords:')
     s = input()
     if s == '':
@@ -132,7 +201,15 @@ def get_coordinates():
     return y, x
 
 
-def print_board(board):
+def print_board(board: list):
+    """
+    Prints board on each turn.
+
+    Parameters
+    ----------
+    board: list
+        current state of the board
+    """
     for i in range(3):
         for j in range(3):
             if board[i][j] == EMPTY:
@@ -145,7 +222,17 @@ def print_board(board):
     print()
 
 
-def valid(board, position):
+def valid(board: list, position: tuple):
+    """
+    Returns True if the given move is valid, False otherwise.
+
+    Parameters
+    ----------
+    board: list
+        current state of the board
+    position: tuple
+        y and x coordinates
+    """
     y, x = position
     if not board[y][x] == EMPTY:
         print('INVALID COORDINATES, PLEASE TRY AGAIN')
@@ -153,7 +240,17 @@ def valid(board, position):
     return True
 
 
-def game_over(board, max_player = True):
+def game_over(board: list, max_player=True):
+    """
+    Checks the state of the game.
+
+    Parameters
+    ----------
+    board: list
+        current state of the board
+    max_player: bool
+        True if the AI is playing max, False otherwise
+    """
     res = utility(board)
     if res is not False:
         if res == 0:
@@ -172,6 +269,7 @@ def game_over(board, max_player = True):
 
 
 def main():
+    """TEXT BASED DEMO OF THE TIC-TAC-TOE"""
     grid = [[EMPTY for i in range(3)] for j in range(3)]
     ai = player_select()
     while True:
