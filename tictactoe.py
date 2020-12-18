@@ -1,5 +1,4 @@
 #! python3
-# Cleaner draft, moved viable functions from draft file.
 
 EMPTY = 10
 X = 1
@@ -170,9 +169,9 @@ def move(board: list, action: tuple, max_player=True):
     """
     y, x = action
     if max_player:
-        board[y][x] = 1
+        board[y][x] = X
     else:
-        board[y][x] = 0
+        board[y][x] = O
 
 
 # UTILITY GAME FUNCTIONS
@@ -279,7 +278,7 @@ def main():
                 y, x = get_coordinates()
                 if not valid(grid, (y, x)):
                     continue
-                grid[y][x] = 0
+                grid[y][x] = O
             else:
                 ac = player(grid, max_player=ai)
                 move(grid, ac, max_player=ai)
@@ -288,7 +287,7 @@ def main():
                 y, x = get_coordinates()
                 if not valid(grid, (y, x)):
                     continue
-                grid[y][x] = 1
+                grid[y][x] = X
             else:
                 ac = player(grid, max_player=ai)
                 move(grid, ac, max_player=ai)
