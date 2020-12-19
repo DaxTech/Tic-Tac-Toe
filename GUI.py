@@ -336,7 +336,7 @@ while running:
             ac = player(test.board, max_player=ai)
             move(test.board, ac, max_player=ai)
     except:
-        continue
+        pass
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
