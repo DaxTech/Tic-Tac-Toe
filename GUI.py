@@ -1,6 +1,7 @@
 #! python3
 
 import pygame
+from tictactoe import Helper
 
 pygame.init()
 
@@ -8,192 +9,7 @@ EMPTY = 10
 X = 1
 O = 0
 MODIFIER = 200
-
-def utility(board: list):
-    """
-    Returns value of the board.
-
-    Parameters
-    ----------
-    board: list
-        current or hypothetical board state
-    """
-    transpose = list(map(list, zip(*board)))  # Transposed copy of the board
-    counts = 0
-    diagonal_a = sum(board[z][z] for z in range(3))
-    diagonal_b = sum([board[2][0], board[1][1], board[0][2]])
-    for i in range(3):
-        # Checking vertical and horizontal terminal states
-        if sum(board[i]) == 3 or sum(transpose[i]) == 3:
-            return 1
-        if sum(board[i]) == 0 or sum(transpose[i]) == 0:
-            return -1
-        if 10 not in board[i]:
-            counts += 1
-    # Checking diagonal terminal states
-    if diagonal_a == 3 or diagonal_b == 3:
-        return 1
-    if diagonal_a == 0 or diagonal_b == 0:
-        return -1
-    if counts == 3:
-        return 0
-    return False # the game is not yet finished
-
-
-def turn(board: list):
-    """
-    Returns True if it's max's turn, False otherwise.
-
-    Parameters
-    ----------
-    board: list
-        current or hypothetical board state
-    """
-    counts = 0
-    for row in board:
-        for item in row:
-            if not item == 10:
-                counts += 1
-    if counts % 2 == 1:
-        return False
-    return True
-
-
-def possible_actions(board: list):
-    """
-    Returns list of possible moves/actions.
-
-    Parameters
-    ----------
-    board: list
-        current or hypothetical board state
-    """
-    coords = []
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == EMPTY:
-                coords.append((i, j))
-    return coords
-
-
-def transition(board: list, action: tuple, max_turn=True):
-    """
-    Returns resulting board after making a certain move.
-
-    Parameters
-    ----------
-    board: list
-        current or hypothetical board state
-    action: tuple
-        y and x coordinates
-    max_turn: bool
-        True if it's max's turn, False otherwise
-    """
-    y, x = action
-    if max_turn:
-        board[y][x] = 1
-    else:
-        board[y][x] = 0
-    return board
-
-
-def maximizer(board: list):
-    """
-    Recursive function. Returns action with the highest possible outcome.
-
-    Parameters
-    ---------
-    board: list
-        current or hypothetical board state
-    """
-    if utility(board) is not False:
-        return utility(board), None
-    result = None
-    v = -2
-    for action in possible_actions(board):
-        v2 = minimizer(transition(board, action))
-        if v2[0] >= v:
-            result = action
-            v = v2[0]
-        board[action[0]][action[1]] = EMPTY
-    return v, result
-
-
-def minimizer(board: list):
-    """
-    Recursive function. Returns action with the lowest possible outcome.
-
-    Parameters
-    ----------
-    board: list
-        current or hypothetical board state
-    """
-    if utility(board) is not False:
-        return utility(board), None
-    result = None
-    v = 1000
-    for action in possible_actions(board):
-        v2 = maximizer(transition(board, action, max_turn=False))
-        if v2[0] <= v:
-            result = action
-            v = v2[0]
-        board[action[0]][action[1]] = EMPTY
-    return v, result
-
-
-def player(board: list, max_player=True):
-    """
-    Returns best move either for X or O
-
-    Parameters
-    ----------
-    board: list
-        current state of the board
-    max_player: bool
-        True if the AI is playing max, False otherwise
-    """
-    if max_player:
-        return maximizer(board)[1]
-    else:
-        return minimizer(board)[1]
-
-
-def move(board: list, action: tuple, max_player=True):
-    """
-    Makes a movement of the board in place.
-
-    Parameters
-    ---------
-    board: list
-        current state of the board
-    action: tuple
-        y and x coordinates
-    max_player: bool
-        True if the AI is playing max, False otherwise
-    """
-    y, x = action
-    if max_player:
-        board[y][x] = X
-    else:
-        board[y][x] = O
-
-
-def valid(board: list, position: tuple):
-    """
-    Returns True if the given move is valid, False otherwise.
-
-    Parameters
-    ----------
-    board: list
-        current state of the board
-    position: tuple
-        y and x coordinates
-    """
-    y, x = position
-    if not board[y][x] == EMPTY:
-        print('INVALID COORDINATES, PLEASE TRY AGAIN')
-        return False
-    return True
+clumsy = False
 
 class Game:
     """Game class."""
@@ -213,7 +29,8 @@ class Game:
 
         pygame.display.flip()
 
-    def player_select(self):
+    @staticmethod
+    def player_select():
         font = pygame.font.SysFont('comicsans', 40, True)
         text = font.render("Choose your player:", 1, (0, 0, 0))
         text2 = font.render("Press 1 for X, 2 for O", 1, (0, 0, 0))
@@ -221,7 +38,8 @@ class Game:
         window.blit(text2, (150, 60))
         pygame.display.flip()
 
-    def clear_top(self):
+    @staticmethod
+    def clear_top():
         temp = pygame.Surface((600, 100))
         temp.fill((255, 255, 255))
         window.blit(temp, (0, 0))
@@ -258,25 +76,32 @@ class Game:
 
     def game_over(self):
         font = pygame.font.SysFont("comicsans", 80, True)
-        text = font.render('AI WON', 1, (255, 0, 0))
-        text1 = font.render('YOU WON', 1, (0, 255, 0))
-        area = (150, 20)
-        res = utility(self.board)
+        text = font.render('AI WON!', 1, (255, 0, 0))
+        text1 = font.render('YOU WON!', 1, (0, 255, 0))
+        area = (175, 20)
+        over = False
+        res = Helper.utility(self.board)
         if res is not False:
             if res == 0:
-                text2 = font.render('TIE', 1, (0, 0, 255))
-                self.screen.blit(text2, area)
+                text2 = font.render('TIE!', 1, (0, 0, 255))
+                self.screen.blit(text2, (230, 20))
+                over = True
             if self.max_player:
                 if res == 1:
                     self.screen.blit(text1, area)
+                    over = True
                 if res == -1:
                     self.screen.blit(text, area)
+                    over = True
             else:
                 if res == 1:
                     self.screen.blit(text, area)
+                    over = True
                 if res == -1:
                     self.screen.blit(text1, area)
+                    over = True
         pygame.display.flip()
+        return over
 
     @staticmethod
     def get_pos(coordinates):
@@ -297,6 +122,18 @@ class Game:
         return y_pos, x_pos
 
 
+counts = open('games_played.txt').read()
+if counts == '':
+    counts = 0
+
+n = int(counts) + 1
+fwriter = open('games_played.txt', 'w')
+fwriter.write(str(n))
+fwriter.close()
+if n % 5 == 0:
+    clumsy = True
+
+
 window = pygame.display.set_mode((600, 700))
 window.fill((255, 255, 255))
 pygame.display.flip()
@@ -311,7 +148,7 @@ while not selected:
     test.clear_top()
     pygame.time.delay(200)
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and (event.key == pygame.K_1 or event.key == pygame.K_2):
             selected = True
             if event.key == pygame.K_1:
                 test.change_player(True)
@@ -329,21 +166,19 @@ finished = False
 while running:
 
     test.update_board()
-    test.game_over()
+    finished = test.game_over()
 
-    try:
-        if turn(test.board) == ai:
-            ac = player(test.board, max_player=ai)
-            move(test.board, ac, max_player=ai)
-    except:
-        pass
+    if Helper.turn(test.board) == ai and not finished:
+        ac = Helper.player(test.board, dumb=clumsy, max_player=ai)
+        Helper.move(test.board, ac, max_player=ai)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and not finished:
             p = Game.get_pos(event.pos)
-            if turn(test.board) == test.max_player:
-                if not valid(test.board, p):
+            if Helper.turn(test.board) == test.max_player:
+                if not Helper.valid(test.board, p):
                     continue
                 if test.max_player:
                     test.board[p[0]][p[1]] = 1
