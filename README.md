@@ -1,15 +1,4 @@
 # Tic-Tac-Toe
-This is the Tic-Tac-Toe repo. Currently it's in development.<br>
-The aim of this project is to create an AI that can play Tic-Tac-Toe using the minimax algorithm.<br>
-<br>
-## TODO
-- Text-based version. <br>
-- GUI version. <br>
-<br>
-
-## Splitting it up
-- Represent 3x3 grid. <br>
-- Values of X & O. <br>
-- Implement the minimax algorithm. <br>
-- Turns for the player, and the AI. <br>
-- GUI with pygame. <br>
+This project uses the minimax algorithm to create an AI that can play tic-tac-toe.<br>
+Run `GUI.py` and start playing!<br>
+Else, if you want to try the text-based version, run `run.py` and follow the instructions.
