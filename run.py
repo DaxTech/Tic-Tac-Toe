@@ -2,13 +2,14 @@
 
 from tictactoe import Helper
 
+# CONSTANTS
 EMPTY = 10
 O = 0
 X = 1
 
 
 def main():
-    """TEXT BASED DEMO OF THE TIC-TAC-TOE"""
+    """TEXT BASED VERSION OF THE TIC-TAC-TOE"""
     grid = [[EMPTY for i in range(3)] for j in range(3)]
     ai = Helper.player_select()
     while True:

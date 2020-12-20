@@ -1,27 +1,48 @@
 #! python3
 
 import pygame
+import random
 from tictactoe import Helper
 
 pygame.init()
 
+# CONSTANTS
 EMPTY = 10
 X = 1
 O = 0
 MODIFIER = 200
 clumsy = False
 
+
 class Game:
-    """Game class."""
-    def __init__(self, screen):
+    """
+    Game class.
+
+    Parameters
+    ----------
+    screen: pygame.Surface
+        game window
+
+    Attributes
+    ----------
+    screen: pygame.Surface
+        game window
+    board: list
+        tic-tac-toe board
+    max_player: bool
+        True if the user plays X, False otherwise
+    """
+    def __init__(self, screen: pygame.Surface):
         self.screen = screen
         self.board = [[EMPTY for i in range(3)] for j in range(3)]
         self.max_player = None
 
-    def change_player(self, t):
+    def change_player(self, t: bool):
+        """Changes max_player depending on the user's choice."""
         self.max_player = t
 
     def draw_window(self):
+        """Draws the tic-tac-toe board on the game window."""
         for i in range(200, 600, 200):
             pygame.draw.line(self.screen, "black", (i, 130), (i, 670), width=3)
         for j in range(300, 700, 200):
@@ -31,6 +52,7 @@ class Game:
 
     @staticmethod
     def player_select():
+        """Displays player_select "interface" to the user."""
         font = pygame.font.SysFont('comicsans', 40, True)
         text = font.render("Choose your player:", 1, (0, 0, 0))
         text2 = font.render("Press 1 for X, 2 for O", 1, (0, 0, 0))
@@ -40,20 +62,38 @@ class Game:
 
     @staticmethod
     def clear_top():
+        """Clears the top side of the screen."""
         temp = pygame.Surface((600, 100))
         temp.fill((255, 255, 255))
         window.blit(temp, (0, 0))
         pygame.display.flip()
 
-    def draw_o(self, coordinates):
+    def draw_o(self, coordinates: tuple):
+        """
+        Draws a circle (O) to the screen at the given position.
+
+        Parameters
+        ----------
+        coordinates: tuple
+            y, x coordinates
+        """
         y, x = coordinates
-        x_pos, y_pos = 100, 200
+        x_pos, y_pos = 100, 200  # default position for coordinates (0, 0)
         x_pos += MODIFIER * x
         y_pos += MODIFIER * y
         pygame.draw.circle(self.screen, (0, 0, 0), (x_pos, y_pos), 80, width=3)
         pygame.display.flip()
 
-    def draw_x(self, coordinates):
+    def draw_x(self, coordinates: tuple):
+        """
+        Draws an X to the screen at the given position.
+
+        Parameters
+        ----------
+        coordinates: tuple
+            y, x coordinates
+        """
+        # Default positions for coordinates (0, 0)
         x_min, x_max = 25, 165
         y_min, y_max = 130, 270
         y, x = coordinates
@@ -67,14 +107,16 @@ class Game:
         pygame.display.flip()
 
     def update_board(self):
+        """Updates the screen depending on the state of the board."""
         for i in range(3):
             for j in range(3):
-                if self.board[i][j] == 1:
+                if self.board[i][j] == X:
                     self.draw_x((i, j))
-                if self.board[i][j] == 0:
+                if self.board[i][j] == O:
                     self.draw_o((i, j))
 
     def game_over(self):
+        """Checks for terminal state of the board."""
         font = pygame.font.SysFont("comicsans", 80, True)
         text = font.render('AI WON!', 1, (255, 0, 0))
         text1 = font.render('YOU WON!', 1, (0, 255, 0))
@@ -104,7 +146,15 @@ class Game:
         return over
 
     @staticmethod
-    def get_pos(coordinates):
+    def get_pos(coordinates: tuple):
+        """
+        Calculates coordinates given the mouse-clicked position.
+
+        Parameters
+        ----------
+        coordinates tuple
+            y, x coordinates (screen scale)
+        """
         x_coords, y_coords = coordinates
         x_pos, y_pos = None, None
         if y_coords in range(100, 300):
@@ -122,18 +172,12 @@ class Game:
         return y_pos, x_pos
 
 
-counts = open('games_played.txt').read()
-if counts == '':
-    counts = 0
-
-n = int(counts) + 1
-fwriter = open('games_played.txt', 'w')
-fwriter.write(str(n))
-fwriter.close()
-if n % 5 == 0:
+# Randomly chooses whether the AI will let the user win or not
+n = random.randint(0, 1)
+if n == 1:
     clumsy = True
 
-
+# Set up
 window = pygame.display.set_mode((600, 700))
 window.fill((255, 255, 255))
 pygame.display.flip()
@@ -141,6 +185,7 @@ pygame.display.set_caption("Tic Tac Toe")
 test = Game(window)
 test.draw_window()
 
+# Player select "interface"
 selected = False
 while not selected:
     test.player_select()
@@ -155,12 +200,13 @@ while not selected:
             elif event.key == pygame.K_2:
                 test.change_player(False)
 
-
+# Ai plays max or min depending on the user's choice
 if test.max_player:
     ai = False
 else:
     ai = True
 
+# Main game loop
 running = True
 finished = False
 while running:
@@ -181,6 +227,6 @@ while running:
                 if not Helper.valid(test.board, p):
                     continue
                 if test.max_player:
-                    test.board[p[0]][p[1]] = 1
+                    test.board[p[0]][p[1]] = X
                 else:
-                    test.board[p[0]][p[1]] = 0
+                    test.board[p[0]][p[1]] = O
